@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="ChamberShape" parent="" />
+
+    <style name="ChamberShape.Rounded">
+        <item name="cornerFamily">rounded</item>
+    </style>
+
+    <style name="ChamberShape.Rounded.50p">
+        <item name="cornerSize">50%</item>
+    </style>
+
+</resources>
