@@ -49,6 +49,10 @@ class MainActivity : AppCompatActivity() {
 
         cameraExecutor = Executors.newSingleThreadExecutor()
 
+        binding.cameraCaptureButton.setOnClickListener {
+            takePhoto()
+        }
+
     }
 
     private fun getOutputDirectory(): File {
@@ -96,6 +100,7 @@ class MainActivity : AppCompatActivity() {
             val preview = Preview.Builder()
                 .build()
                 .also {
+
                     it.setSurfaceProvider(binding.viewFinder.surfaceProvider)
                 }
 
