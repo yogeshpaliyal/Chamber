@@ -1,1 +1,1 @@
-# Chamber 📸
+# Chamber 📸 : The Camera App
