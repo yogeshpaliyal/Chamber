@@ -8,11 +8,9 @@ import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
+import android.view.MotionEvent
 import android.widget.Toast
-import androidx.camera.core.CameraSelector
-import androidx.camera.core.ImageCapture
-import androidx.camera.core.ImageCaptureException
-import androidx.camera.core.Preview
+import androidx.camera.core.*
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
@@ -31,6 +29,8 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var outputDirectory: File
     private lateinit var cameraExecutor: ExecutorService
+
+    private var cameraControl : CameraControl ?= null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -51,6 +51,29 @@ class MainActivity : AppCompatActivity() {
 
         binding.cameraCaptureButton.setOnClickListener {
             takePhoto()
+        }
+
+        binding.viewFinder.setOnTouchListener { view, motionEvent ->
+            when (motionEvent.action) {
+                MotionEvent.ACTION_DOWN -> return@setOnTouchListener true
+                MotionEvent.ACTION_UP -> {
+                    // Get the MeteringPointFactory from PreviewView
+                    val factory = binding.viewFinder.getMeteringPointFactory()
+
+                    // Create a MeteringPoint from the tap coordinates
+                    val point = factory.createPoint(motionEvent.x, motionEvent.y)
+
+                    // Create a MeteringAction from the MeteringPoint, you can configure it to specify the metering mode
+                    val action = FocusMeteringAction.Builder(point).build()
+
+                    // Trigger the focus and metering. The method returns a ListenableFuture since the operation
+                    // is asynchronous. You can use it get notified when the focus is successful or if it fails.
+                    cameraControl?.startFocusAndMetering(action)
+
+                    return@setOnTouchListener true
+                }
+                else -> return@setOnTouchListener false
+            }
         }
 
     }
@@ -104,6 +127,10 @@ class MainActivity : AppCompatActivity() {
                     it.setSurfaceProvider(binding.viewFinder.surfaceProvider)
                 }
 
+
+
+
+
             imageCapture = ImageCapture.Builder()
                 .build()
 
@@ -115,8 +142,12 @@ class MainActivity : AppCompatActivity() {
                 cameraProvider.unbindAll()
 
                 // Bind use cases to camera
-                cameraProvider.bindToLifecycle(
+                val camera = cameraProvider.bindToLifecycle(
                     this, cameraSelector, preview, imageCapture)
+
+
+                cameraControl = camera.cameraControl
+
 
             } catch(exc: Exception) {
                 Log.e(TAG, "Use case binding failed", exc)
