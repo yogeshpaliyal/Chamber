@@ -20,13 +20,14 @@ import com.yogeshpaliyal.chamber.MainActivity
 import com.yogeshpaliyal.chamber.MainViewModel
 import com.yogeshpaliyal.chamber.R
 import com.yogeshpaliyal.chamber.databinding.FragmentCameraBinding
+import dagger.hilt.android.AndroidEntryPoint
 import java.io.File
 import java.text.SimpleDateFormat
 import java.util.*
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 
-
+@AndroidEntryPoint
 class CameraFragment : Fragment() {
 
     private lateinit var binding: FragmentCameraBinding
