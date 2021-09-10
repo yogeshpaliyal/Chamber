@@ -10,4 +10,13 @@
         android:name="com.yogeshpaliyal.chamber.camera.CameraFragment"
         android:label="fragment_camera"
         tools:layout="@layout/fragment_camera" />
+    <fragment
+        android:id="@+id/previewFragment"
+        android:name="com.yogeshpaliyal.chamber.preview.PreviewFragment"
+        android:label="PreviewFragment"
+        tools:layout="@layout/fragment_preview"/>
+
+    <action
+        android:id="@+id/action_global_previewFragment"
+        app:destination="@id/previewFragment" />
 </navigation>

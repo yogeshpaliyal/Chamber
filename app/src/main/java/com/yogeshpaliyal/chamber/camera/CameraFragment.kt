@@ -16,10 +16,13 @@ import androidx.camera.core.*
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.navigation.fragment.findNavController
 import com.yogeshpaliyal.chamber.MainActivity
 import com.yogeshpaliyal.chamber.MainViewModel
 import com.yogeshpaliyal.chamber.R
 import com.yogeshpaliyal.chamber.databinding.FragmentCameraBinding
+import com.yogeshpaliyal.chamber.preview.PreviewFragment
+import com.yogeshpaliyal.chamber.preview.PreviewFragmentDirections
 import dagger.hilt.android.AndroidEntryPoint
 import java.io.File
 import java.text.SimpleDateFormat
@@ -94,6 +97,12 @@ class CameraFragment : Fragment() {
         } else {
             requestPermissions(REQUIRED_PERMISSIONS, REQUEST_CODE_PERMISSIONS)
         }
+
+        mViewModel?.capturedImage?.observe(viewLifecycleOwner, androidx.lifecycle.Observer {
+            it?.getContentIfNotHandled()?.let {
+                findNavController().navigate(PreviewFragmentDirections.actionGlobalPreviewFragment())
+            }
+        })
 
         return binding.root
     }
@@ -207,6 +216,7 @@ class CameraFragment : Fragment() {
                     val savedUri = Uri.fromFile(photoFile)
                     val msg = "Photo capture succeeded: $savedUri"
                     Toast.makeText(context, msg, Toast.LENGTH_SHORT).show()
+                    mViewModel?.setCapturedImage(savedUri)
                     Log.d(TAG, msg)
                 }
             })
