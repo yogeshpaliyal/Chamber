@@ -157,7 +157,6 @@ class CameraFragment : Fragment() {
             val preview = Preview.Builder()
                 .build()
                 .also {
-
                     it.setSurfaceProvider(binding.viewFinder.surfaceProvider)
                 }
 

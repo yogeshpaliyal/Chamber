@@ -27,5 +27,17 @@
            app:layout_constraintBottom_toBottomOf="parent"
            android:id="@+id/photoView"/>
 
+        <com.google.android.material.appbar.MaterialToolbar
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:id="@+id/toolbar"
+            tools:title="Hello"
+            app:navigationIconTint="@color/white"
+            app:navigationIcon="@drawable/ic_round_arrow_back_ios_24"
+            app:titleTextColor="@color/white"/>
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>
