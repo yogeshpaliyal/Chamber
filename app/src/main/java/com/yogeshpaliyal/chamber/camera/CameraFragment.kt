@@ -1,6 +1,7 @@
 package com.yogeshpaliyal.chamber.camera
 
 import android.Manifest
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Bundle
@@ -217,8 +218,16 @@ class CameraFragment : Fragment() {
                     val msg = "Photo capture succeeded: $savedUri"
                     Toast.makeText(context, msg, Toast.LENGTH_SHORT).show()
                     mViewModel?.setCapturedImage(savedUri)
+                    galleryAddPic(savedUri)
                     Log.d(TAG, msg)
                 }
             })
+    }
+
+    private fun galleryAddPic(uri: Uri) {
+        Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE).also { mediaScanIntent ->
+            mediaScanIntent.data = uri
+            context?.sendBroadcast(mediaScanIntent)
+        }
     }
 }
