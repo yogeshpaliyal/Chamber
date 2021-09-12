@@ -69,6 +69,10 @@ class CameraFragment : Fragment() {
             takePhoto()
         }
 
+        binding.btnFlipCamera.setOnClickListener {
+
+        }
+
         binding.viewFinder.setOnTouchListener { view, motionEvent ->
             when (motionEvent.action) {
                 MotionEvent.ACTION_DOWN -> return@setOnTouchListener true
