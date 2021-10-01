@@ -44,6 +44,7 @@ class CameraFragment : Fragment() {
 
     private var cameraControl: CameraControl? = null
     var cameraSelector = CameraSelector.DEFAULT_BACK_CAMERA
+    var flashMode = ImageCapture.FLASH_MODE_OFF
 
     companion object {
         private const val TAG = "CameraXBasic"
@@ -69,6 +70,23 @@ class CameraFragment : Fragment() {
                 CameraSelector.DEFAULT_FRONT_CAMERA
             else
                 CameraSelector.DEFAULT_BACK_CAMERA
+            startCamera()
+        }
+        binding.btnFlash.setOnClickListener {
+            when (flashMode) {
+                ImageCapture.FLASH_MODE_OFF -> {
+                    flashMode = ImageCapture.FLASH_MODE_ON
+                    binding.btnFlash.setImageResource(R.drawable.ic_baseline_flash_on_24)
+                }
+                ImageCapture.FLASH_MODE_ON -> {
+                    flashMode = ImageCapture.FLASH_MODE_AUTO
+                    binding.btnFlash.setImageResource(R.drawable.ic_baseline_flash_auto_24)
+                }
+                ImageCapture.FLASH_MODE_AUTO -> {
+                    flashMode = ImageCapture.FLASH_MODE_OFF
+                    binding.btnFlash.setImageResource(R.drawable.ic_baseline_flash_off_24)
+                }
+            }
             startCamera()
         }
 
@@ -170,12 +188,30 @@ class CameraFragment : Fragment() {
                 val camera = cameraProvider.bindToLifecycle(
                     this, cameraSelector, preview, imageCapture
                 )
+                if (camera.cameraInfo.hasFlashUnit()) {
+                    imageCapture?.flashMode = flashMode
+                }
                 cameraControl = camera.cameraControl
+                setFlashButton()
             } catch (exc: Exception) {
                 Log.e(TAG, "Use case binding failed", exc)
             }
 
         }, ContextCompat.getMainExecutor(context))
+    }
+
+    private fun setFlashButton() {
+        when (flashMode) {
+            ImageCapture.FLASH_MODE_OFF -> {
+                binding.btnFlash.setImageResource(R.drawable.ic_baseline_flash_off_24)
+            }
+            ImageCapture.FLASH_MODE_ON -> {
+                binding.btnFlash.setImageResource(R.drawable.ic_baseline_flash_on_24)
+            }
+            ImageCapture.FLASH_MODE_AUTO -> {
+                binding.btnFlash.setImageResource(R.drawable.ic_baseline_flash_auto_24)
+            }
+        }
     }
 
     private fun takePhoto() {
