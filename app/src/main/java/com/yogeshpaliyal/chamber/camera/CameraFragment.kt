@@ -6,7 +6,6 @@ import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Bundle
 import android.util.Log
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
@@ -15,14 +14,12 @@ import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.camera.core.*
 import androidx.camera.lifecycle.ProcessCameraProvider
-import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
-import com.yogeshpaliyal.chamber.MainActivity
 import com.yogeshpaliyal.chamber.MainViewModel
 import com.yogeshpaliyal.chamber.R
 import com.yogeshpaliyal.chamber.databinding.FragmentCameraBinding
-import com.yogeshpaliyal.chamber.preview.PreviewFragment
 import com.yogeshpaliyal.chamber.preview.PreviewFragmentDirections
 import dagger.hilt.android.AndroidEntryPoint
 import java.io.File
@@ -45,7 +42,8 @@ class CameraFragment : Fragment() {
     private var outputDirectory: File? = null
     private lateinit var cameraExecutor: ExecutorService
 
-    private var cameraControl : CameraControl?= null
+    private var cameraControl: CameraControl? = null
+    var cameraSelector = CameraSelector.DEFAULT_BACK_CAMERA
 
     companion object {
         private const val TAG = "CameraXBasic"
@@ -57,20 +55,21 @@ class CameraFragment : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         // Inflate the layout for this fragment
-        binding = FragmentCameraBinding.inflate(inflater,container,false)
+        binding = FragmentCameraBinding.inflate(inflater, container, false)
 
         outputDirectory = getOutputDirectory()
-
         cameraExecutor = Executors.newSingleThreadExecutor()
-
         binding.cameraCaptureButton.setOnClickListener {
             takePhoto()
         }
-
         binding.btnFlipCamera.setOnClickListener {
-
+            cameraSelector = if (cameraSelector == CameraSelector.DEFAULT_BACK_CAMERA)
+                CameraSelector.DEFAULT_FRONT_CAMERA
+            else
+                CameraSelector.DEFAULT_BACK_CAMERA
+            startCamera()
         }
 
         binding.viewFinder.setOnTouchListener { view, motionEvent ->
@@ -95,7 +94,6 @@ class CameraFragment : Fragment() {
                 else -> return@setOnTouchListener false
             }
         }
-
         // Request camera permissions
         if (allPermissionsGranted()) {
             startCamera()
@@ -114,23 +112,26 @@ class CameraFragment : Fragment() {
 
     private fun getOutputDirectory(): File? {
         val mediaDir = context?.externalMediaDirs?.firstOrNull()?.let {
-            File(it, resources.getString(R.string.app_name)).apply { mkdirs() } }
+            File(it, resources.getString(R.string.app_name)).apply { mkdirs() }
+        }
         return if (mediaDir != null && mediaDir.exists())
             mediaDir else context?.filesDir
     }
 
     override fun onRequestPermissionsResult(
         requestCode: Int, permissions: Array<String>, grantResults:
-        IntArray) {
+        IntArray
+    ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-
         if (requestCode == REQUEST_CODE_PERMISSIONS) {
             if (allPermissionsGranted()) {
                 startCamera()
             } else {
-                Toast.makeText(context,
+                Toast.makeText(
+                    context,
                     "Permissions not granted by the user.",
-                    Toast.LENGTH_SHORT).show()
+                    Toast.LENGTH_SHORT
+                ).show()
                 activity?.finish()
             }
         }
@@ -139,7 +140,8 @@ class CameraFragment : Fragment() {
     private fun allPermissionsGranted() = REQUIRED_PERMISSIONS.all { permission ->
         context?.let {
             ContextCompat.checkSelfPermission(
-                it, permission) == PackageManager.PERMISSION_GRANTED
+                it, permission
+            ) == PackageManager.PERMISSION_GRANTED
         } ?: false
     }
 
@@ -149,51 +151,32 @@ class CameraFragment : Fragment() {
     }
 
     private fun startCamera() {
-
         val tempContext = context ?: return
-
         val cameraProviderFuture = ProcessCameraProvider.getInstance(tempContext)
-
         cameraProviderFuture.addListener(Runnable {
             // Used to bind the lifecycle of cameras to the lifecycle owner
             val cameraProvider: ProcessCameraProvider = cameraProviderFuture.get()
-
-            // Preview
             val preview = Preview.Builder()
                 .build()
                 .also {
                     it.setSurfaceProvider(binding.viewFinder.surfaceProvider)
                 }
-
-
-
-
-
-            imageCapture = ImageCapture.Builder()
-                .build()
-
-            // Select back camera as a default
-            val cameraSelector = CameraSelector.DEFAULT_BACK_CAMERA
-
+            imageCapture = ImageCapture.Builder().build()
             try {
                 // Unbind use cases before rebinding
                 cameraProvider.unbindAll()
-
                 // Bind use cases to camera
+
                 val camera = cameraProvider.bindToLifecycle(
-                    this, cameraSelector, preview, imageCapture)
-
-
+                    this, cameraSelector, preview, imageCapture
+                )
                 cameraControl = camera.cameraControl
-
-
-            } catch(exc: Exception) {
+            } catch (exc: Exception) {
                 Log.e(TAG, "Use case binding failed", exc)
             }
 
         }, ContextCompat.getMainExecutor(context))
     }
-
 
     private fun takePhoto() {
         // Get a stable reference of the modifiable image capture use case
@@ -204,7 +187,8 @@ class CameraFragment : Fragment() {
             outputDirectory,
             SimpleDateFormat(
                 FILENAME_FORMAT, Locale.US
-            ).format(System.currentTimeMillis()) + ".jpg")
+            ).format(System.currentTimeMillis()) + ".jpg"
+        )
 
         // Create output options object which contains file + metadata
         val outputOptions = ImageCapture.OutputFileOptions.Builder(photoFile).build()
@@ -212,7 +196,9 @@ class CameraFragment : Fragment() {
         // Set up image capture listener, which is triggered after photo has
         // been taken
         imageCapture.takePicture(
-            outputOptions, ContextCompat.getMainExecutor(context), object : ImageCapture.OnImageSavedCallback {
+            outputOptions,
+            ContextCompat.getMainExecutor(context),
+            object : ImageCapture.OnImageSavedCallback {
                 override fun onError(exc: ImageCaptureException) {
                     Log.e(TAG, "Photo capture failed: ${exc.message}", exc)
                 }
