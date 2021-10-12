@@ -27,17 +27,20 @@ class ChamberView @JvmOverloads constructor(
     private var previewView: PreviewView = PreviewView(context)
     private val FILENAME_FORMAT = "yyyy-MM-dd-HH-mm-ss-SSS"
 
-
-    private val cameraExecutor = Executors.newSingleThreadExecutor()
     private var cameraControl: CameraControl? = null
     private var imageCapture: ImageCapture? = null
     private var cameraSelector = CameraSelector.DEFAULT_BACK_CAMERA
 
     private var mChamberInterface: ChamberListener? = null
+    private var mChamberResultListener: ChamberResultListener? = null
 
 
     fun bindToLifecycle(lifecycleOwner: LifecycleOwner) {
         startCamera(lifecycleOwner)
+    }
+
+    fun setResultListener(mChamberResultListener: ChamberResultListener?){
+        this.mChamberResultListener = mChamberResultListener
     }
 
 
@@ -125,12 +128,11 @@ class ChamberView @JvmOverloads constructor(
             object : ImageCapture.OnImageSavedCallback {
                 override fun onError(exc: ImageCaptureException) {
                     //Log.e(TAG, "Photo capture failed: ${exc.message}", exc)
+                    mChamberResultListener?.result(ChamberResult.Error(exc))
                 }
 
                 override fun onImageSaved(output: ImageCapture.OutputFileResults) {
-                    val savedUri = Uri.fromFile(photoFile)
-                    val msg = "Photo capture succeeded: $savedUri"
-                    Toast.makeText(context, msg, Toast.LENGTH_SHORT).show()
+                    mChamberResultListener?.result(ChamberResult.Success(output.savedUri))
                 }
             })
     }

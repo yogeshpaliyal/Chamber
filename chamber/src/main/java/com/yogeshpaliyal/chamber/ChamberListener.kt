@@ -4,5 +4,5 @@ import java.io.File
 
 
 interface ChamberListener {
-    fun getOutputFile() : File
+    fun getOutputFile() : File?
 }
