@@ -4,7 +4,7 @@ import android.net.Uri
 import androidx.camera.core.ImageCaptureException
 
 
-interface ChamberResultListener{
+fun interface ChamberResultListener{
     fun result(result: ChamberResult)
 }
 

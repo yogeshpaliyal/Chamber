@@ -2,21 +2,17 @@ package com.yogeshpaliyal.chamber
 
 import android.annotation.SuppressLint
 import android.content.Context
-import android.net.Uri
 import android.util.AttributeSet
 import android.view.MotionEvent
 import android.widget.FrameLayout
-import android.widget.Toast
 import androidx.camera.core.*
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.view.PreviewView
 import androidx.core.content.ContextCompat
-import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleOwner
 import java.io.File
 import java.text.SimpleDateFormat
 import java.util.*
-import java.util.concurrent.Executors
 
 @SuppressLint("ClickableViewAccessibility")
 class ChamberView @JvmOverloads constructor(
@@ -29,17 +25,22 @@ class ChamberView @JvmOverloads constructor(
 
     private var cameraControl: CameraControl? = null
     private var imageCapture: ImageCapture? = null
+
     private var cameraSelector = CameraSelector.DEFAULT_BACK_CAMERA
 
     private var mChamberInterface: ChamberListener? = null
     private var mChamberResultListener: ChamberResultListener? = null
 
+    fun getFlashMode() = imageCapture?.flashMode
+
+    private var lifecycleOwner: LifecycleOwner? = null
 
     fun bindToLifecycle(lifecycleOwner: LifecycleOwner) {
-        startCamera(lifecycleOwner)
+        this.lifecycleOwner = lifecycleOwner
+        startCamera()
     }
 
-    fun setResultListener(mChamberResultListener: ChamberResultListener?){
+    fun setResultListener(mChamberResultListener: ChamberResultListener?) {
         this.mChamberResultListener = mChamberResultListener
     }
 
@@ -73,8 +74,19 @@ class ChamberView @JvmOverloads constructor(
     }
 
 
-    private fun startCamera(lifecycleOwner: LifecycleOwner) {
+    fun changeFlashMode(@ImageCapture.FlashMode flashMode: Int){
+        imageCapture?.flashMode = flashMode
+    }
+
+    fun switchCamera(cameraSelector: CameraSelector){
+        this.cameraSelector = cameraSelector
+        startCamera()
+    }
+
+
+    private fun startCamera() {
         val tempContext = context ?: return
+        val tempLifecycleOwner = lifecycleOwner ?: throw NullPointerException("Lifecycle is null, Bind to lifecycle")
 
         val cameraProviderFuture = ProcessCameraProvider.getInstance(tempContext)
         cameraProviderFuture.addListener(Runnable {
@@ -85,21 +97,21 @@ class ChamberView @JvmOverloads constructor(
                 .also {
                     it.setSurfaceProvider(previewView.surfaceProvider)
                 }
-            imageCapture = ImageCapture.Builder().build()
+            imageCapture = imageCapture ?: ImageCapture.Builder().build()
             try {
                 // Unbind use cases before rebinding
                 cameraProvider.unbindAll()
                 // Bind use cases to camera
 
                 val camera = cameraProvider.bindToLifecycle(
-                    lifecycleOwner,
+                    tempLifecycleOwner,
                     cameraSelector,
                     preview,
                     imageCapture
                 )
-                if (camera.cameraInfo.hasFlashUnit()) {
-                    //imageCapture?.flashMode = flashMode
-                }
+
+                camera.cameraInfo.hasFlashUnit()
+
                 cameraControl = camera.cameraControl
                 // setFlashButton()
             } catch (exc: Exception) {
@@ -109,6 +121,9 @@ class ChamberView @JvmOverloads constructor(
         }, ContextCompat.getMainExecutor(context))
     }
 
+    /**
+     * Capture the image
+     */
     fun takePhoto() {
         // Get a stable reference of the modifiable image capture use case
         val imageCapture = imageCapture ?: return
