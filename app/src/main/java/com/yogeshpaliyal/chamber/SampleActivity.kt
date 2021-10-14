@@ -17,5 +17,6 @@ class SampleActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         binding.chamberView.bindToLifecycle(this)
+        binding.chamberView.takePhoto()
     }
 }
