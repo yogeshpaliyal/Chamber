@@ -2,10 +2,12 @@ package com.yogeshpaliyal.chamber
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.net.Uri
 import android.util.AttributeSet
 import android.view.MotionEvent
 import android.widget.FrameLayout
 import androidx.camera.core.*
+import androidx.camera.core.ImageCapture.FLASH_MODE_OFF
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.view.PreviewView
 import androidx.core.content.ContextCompat
@@ -29,9 +31,18 @@ class ChamberView @JvmOverloads constructor(
     private var cameraSelector = CameraSelector.DEFAULT_BACK_CAMERA
 
     private var mChamberInterface: ChamberListener? = null
-    private var mChamberResultListener: ChamberResultListener? = null
+
+    private var mChamberResultListener: ((result: ChamberResult) -> Unit)? = null
+
+    private var flashModeChangeListener : ((flashMode: Int)->Unit) ?=null
+
+    fun setFlashModeChangeListener(flashModeChangeListener: (flashMode: Int)->Unit){
+        this.flashModeChangeListener = flashModeChangeListener
+    }
 
     fun getFlashMode() = imageCapture?.flashMode
+
+    fun getCameraSide() = cameraSelector
 
     private var lifecycleOwner: LifecycleOwner? = null
 
@@ -40,7 +51,7 @@ class ChamberView @JvmOverloads constructor(
         startCamera()
     }
 
-    fun setResultListener(mChamberResultListener: ChamberResultListener?) {
+    fun setResultListener(mChamberResultListener: (result: ChamberResult) -> Unit) {
         this.mChamberResultListener = mChamberResultListener
     }
 
@@ -76,6 +87,7 @@ class ChamberView @JvmOverloads constructor(
 
     fun changeFlashMode(@ImageCapture.FlashMode flashMode: Int){
         imageCapture?.flashMode = flashMode
+        flashModeChangeListener?.invoke(flashMode)
     }
 
     fun switchCamera(cameraSelector: CameraSelector){
@@ -111,6 +123,7 @@ class ChamberView @JvmOverloads constructor(
                 )
 
                 camera.cameraInfo.hasFlashUnit()
+                changeFlashMode(FLASH_MODE_OFF)
 
                 cameraControl = camera.cameraControl
                 // setFlashButton()
@@ -143,11 +156,11 @@ class ChamberView @JvmOverloads constructor(
             object : ImageCapture.OnImageSavedCallback {
                 override fun onError(exc: ImageCaptureException) {
                     //Log.e(TAG, "Photo capture failed: ${exc.message}", exc)
-                    mChamberResultListener?.result(ChamberResult.Error(exc))
+                    mChamberResultListener?.invoke(ChamberResult.Error(exc))
                 }
 
                 override fun onImageSaved(output: ImageCapture.OutputFileResults) {
-                    mChamberResultListener?.result(ChamberResult.Success(output.savedUri))
+                    mChamberResultListener?.invoke(ChamberResult.Success(output.savedUri ?: Uri.fromFile(photoFile)))
                 }
             })
     }

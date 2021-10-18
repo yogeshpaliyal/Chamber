@@ -4,12 +4,9 @@ import android.net.Uri
 import androidx.camera.core.ImageCaptureException
 
 
-fun interface ChamberResultListener{
-    fun result(result: ChamberResult)
-}
 
 
 sealed class ChamberResult{
-    class Success(uri: Uri?) : ChamberResult()
-    class Error(exception : ImageCaptureException) : ChamberResult()
+    class Success(var uri: Uri?) : ChamberResult()
+    class Error(var exception : ImageCaptureException) : ChamberResult()
 }
