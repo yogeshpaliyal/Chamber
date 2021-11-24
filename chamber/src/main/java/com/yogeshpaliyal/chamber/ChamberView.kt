@@ -16,6 +16,8 @@ import java.io.File
 import java.text.SimpleDateFormat
 import java.util.*
 
+
+
 @SuppressLint("ClickableViewAccessibility")
 class ChamberView @JvmOverloads constructor(
     context: Context, attrs: AttributeSet? = null,
@@ -27,6 +29,8 @@ class ChamberView @JvmOverloads constructor(
 
     private var cameraControl: CameraControl? = null
     private var imageCapture: ImageCapture? = null
+
+    private var imageAnalyzer : ImageAnalysis ?= null
 
     private var cameraSelector = CameraSelector.DEFAULT_BACK_CAMERA
 
@@ -48,6 +52,11 @@ class ChamberView @JvmOverloads constructor(
 
     fun bindToLifecycle(lifecycleOwner: LifecycleOwner) {
         this.lifecycleOwner = lifecycleOwner
+        startCamera()
+    }
+
+    fun setImageAnalyzer(imageAnalyzer : ImageAnalysis){
+        this.imageAnalyzer = imageAnalyzer
         startCamera()
     }
 
@@ -109,6 +118,7 @@ class ChamberView @JvmOverloads constructor(
                 .also {
                     it.setSurfaceProvider(previewView.surfaceProvider)
                 }
+
             imageCapture = imageCapture ?: ImageCapture.Builder().build()
             try {
                 // Unbind use cases before rebinding
@@ -119,10 +129,10 @@ class ChamberView @JvmOverloads constructor(
                     tempLifecycleOwner,
                     cameraSelector,
                     preview,
-                    imageCapture
+                    imageCapture,
+                    imageAnalyzer
                 )
 
-                camera.cameraInfo.hasFlashUnit()
                 changeFlashMode(FLASH_MODE_OFF)
 
                 cameraControl = camera.cameraControl
