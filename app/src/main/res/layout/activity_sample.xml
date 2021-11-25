@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context=".SampleActivity">
+
+        <com.yogeshpaliyal.chamber.ChamberView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:id="@+id/chamberView"/>
+
+        <View
+            android:id="@+id/camera_capture_button"
+            android:layout_width="70dp"
+            android:layout_height="0dp"
+            android:layout_marginBottom="50dp"
+            android:background="@drawable/oval"
+            android:elevation="2dp"
+            android:minWidth="0dp"
+            android:minHeight="0dp"
+            android:padding="0dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintDimensionRatio="1:1"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent" />
+
+        <androidx.appcompat.widget.AppCompatImageView
+            android:id="@+id/btnFlipCamera"
+            android:layout_width="60dp"
+            android:layout_height="0dp"
+            android:padding="10dp"
+            android:src="@drawable/ic_baseline_flip_camera_android_24"
+            app:layout_constraintBottom_toBottomOf="@id/camera_capture_button"
+            app:layout_constraintDimensionRatio="1:1"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/camera_capture_button"
+            app:layout_constraintTop_toTopOf="@id/camera_capture_button"
+            app:tint="@color/white" />
+
+        <androidx.appcompat.widget.AppCompatImageView
+            android:id="@+id/btnFlash"
+            android:layout_width="60dp"
+            android:layout_height="0dp"
+            android:padding="16dp"
+            android:src="@drawable/ic_baseline_flash_off_24"
+            app:layout_constraintDimensionRatio="1:1"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:tint="@color/white" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>
