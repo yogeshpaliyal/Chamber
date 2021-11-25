@@ -197,7 +197,7 @@ class CameraFragment : Fragment() {
                 Log.e(TAG, "Use case binding failed", exc)
             }
 
-        }, ContextCompat.getMainExecutor(context))
+        }, ContextCompat.getMainExecutor(requireContext()))
     }
 
     private fun setFlashButton() {
@@ -233,7 +233,7 @@ class CameraFragment : Fragment() {
         // been taken
         imageCapture.takePicture(
             outputOptions,
-            ContextCompat.getMainExecutor(context),
+            ContextCompat.getMainExecutor(requireContext()),
             object : ImageCapture.OnImageSavedCallback {
                 override fun onError(exc: ImageCaptureException) {
                     Log.e(TAG, "Photo capture failed: ${exc.message}", exc)
