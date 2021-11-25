@@ -37,7 +37,7 @@ android {
 
 dependencies {
 
-    implementation project(":chamber")
+    api project(":chamber")
 
     implementation 'androidx.core:core-ktx:1.7.0'
     implementation 'androidx.appcompat:appcompat:1.4.0'
@@ -46,4 +46,14 @@ dependencies {
     testImplementation 'junit:junit:4.+'
     androidTestImplementation 'androidx.test.ext:junit:1.1.3'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'
+
+    implementation "com.google.mlkit:barcode-scanning:17.0.0"
+
+    // CameraX core library using camera2 implementation
+    implementation androidx.camerax_camera2
+    // CameraX Lifecycle Library
+    implementation androidx.camerax_lifecycle
+    // CameraX View class
+    implementation androidx.camerax_view
+
 }

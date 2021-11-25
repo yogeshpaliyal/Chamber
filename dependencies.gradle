@@ -1,0 +1,13 @@
+ext{
+    versions = [
+            camerax : "1.0.2",
+            camerax_view : "1.0.0-alpha31",
+            core_ktx: "1.7.0",
+    ]
+
+    androidx = [
+            camerax_camera2: "androidx.camera:camera-camera2:${versions.camerax}",
+            camerax_lifecycle: "androidx.camera:camera-lifecycle:${versions.camerax}",
+            camerax_view: "androidx.camera:camera-camera:${versions.camerax_view}"
+    ]
+}

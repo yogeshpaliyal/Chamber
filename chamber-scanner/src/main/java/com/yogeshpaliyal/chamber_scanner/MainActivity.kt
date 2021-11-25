@@ -13,5 +13,14 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        binding.chamberView.bindToLifecycle(this)
+
+     /*   val analyzer = ImageAnalysis.Builder()
+            .setTargetAspectRatio(screenAspectRatio)
+            .setTargetRotation(binding.scannerView.display.rotation)
+            .build()
+
+        binding.chamberView.setImageAnalyzer()*/
     }
 }
