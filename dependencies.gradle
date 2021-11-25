@@ -8,6 +8,6 @@ ext{
     androidx = [
             camerax_camera2: "androidx.camera:camera-camera2:${versions.camerax}",
             camerax_lifecycle: "androidx.camera:camera-lifecycle:${versions.camerax}",
-            camerax_view: "androidx.camera:camera-camera:${versions.camerax_view}"
+            camerax_view: "androidx.camera:camera-view:${versions.camerax_view}"
     ]
 }
