@@ -10,4 +10,3 @@ dependencyResolutionManagement {
 rootProject.name = "Chamber"
 include ':app'
 include ':chamber'
-include ':chamber-scanner'
